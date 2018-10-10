@@ -1,0 +1,26 @@
+.mainContainer {
+  display: flex;
+  justify-content: center;
+  margin: 35px auto 0;
+  width: 90%;
+}
+
+.mainContainer > div:first-child {
+  margin: 0 35px 0 0;
+}
+
+.mainContainer > div:last-child {
+  margin: 0 0 0 35px;
+}
+
+.remainingCustomers {
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  font-size: 14px;
+  height: 40px;
+  justify-content: center;
+  margin: 35px auto 0;
+  width: 90%;
+}

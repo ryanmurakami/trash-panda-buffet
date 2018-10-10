@@ -1,0 +1,36 @@
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  width: 90%;
+}
+
+.leftBar,
+.rightBar {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  font-size: 14px;
+  height: 40px;
+  justify-content: center;
+  width: 50%;
+}
+
+.leftBar {
+  border-radius: 20px 0 0 20px;
+  margin: 25px 15px 0 0;
+}
+
+.rightBar {
+  border-radius: 0 20px 20px 0;
+  margin: 25px 0 0 15px;
+}
+
+.text {
+  margin-right: 10px;
+}
+
+.value {
+  font-weight: bold;
+}

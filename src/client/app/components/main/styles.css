@@ -1,0 +1,18 @@
+.main {
+  padding: 150px 0 0;
+  text-align: center;
+}
+
+
+.buttons {
+  display: inline-block;
+  margin: 35px 0;
+}
+
+.buttons .playButton:first-child {
+  margin-right: 5px;
+}
+
+.buttons .playButton:last-child {
+  margin-left: 5px;
+}

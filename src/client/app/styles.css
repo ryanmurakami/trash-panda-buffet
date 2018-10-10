@@ -1,0 +1,9 @@
+:global(body) {
+  background-color: #373737;
+  font-family: Roboto,sans-serif;
+  text-align: center;
+}
+
+:global(a) {
+  text-decoration: none;
+}

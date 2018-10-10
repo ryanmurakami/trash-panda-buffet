@@ -1,0 +1,268 @@
+service: trash-panda-buffet
+
+frameworkVersion: ">=1.32.0 <2.0.0"
+
+custom:
+  cloudFrontDistributionId: trash-panda-buffet
+  client:
+    bucketName: trash-panda-buffet-client-ryan
+    distributionFolder: src/client/dist
+  cloudfrontInvalidate:
+    distributionIdKey: cloudFrontDistributionOutput
+    items:
+      - '/assets/*'
+  database:
+    name: trashPandaBuffet
+    password: pandabear
+    username: trash
+  groupName: trash-panda-buffet
+  kinesis:
+    streamName: trash-panda-buffet
+    partitionKey: food-action
+  vpc:
+    securityGroupIds:
+      - Fn::GetAtt: [ trashPandaSecurityGroup, GroupId ]
+    subnetIds:
+      - Ref: trashPandaSubnetA
+      - Ref: trashPandaSubnetB
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cloudfront:GetDistribution
+        - kinesis:GetRecords
+        - kinesis:PutRecord
+      Resource: '*'
+  environment:
+    DB_ADDRESS:
+      Fn::GetAtt: [ gameDBCluster, Endpoint.Address ]
+    DB_NAME: ${self:custom.database.name}
+    DB_PASSWORD: ${self:custom.database.password}
+    DB_USERNAME: ${self:custom.database.username}
+  tags:
+    Group: ${self:custom.groupName}
+
+functions:
+  index:
+    handler: src/lambda/static.index
+    environment:
+      CLIENT_BUCKET: ${self:custom.client.bucketName}
+      CLOUDFRONT_DOMAIN:
+        Fn::GetAtt: [ assetsCloudFrontDistribution, DomainName ]
+    events:
+      - http:
+          path: /
+          method: get
+
+  gameStart:
+    handler: src/lambda/game.init
+    vpc: ${self:custom.vpc}
+    events:
+      - http:
+          path: /game
+          method: post
+
+  gameSave:
+    handler: src/lambda/game.save
+    vpc: ${self:custom.vpc}
+    events:
+      - http:
+          path: /game/{id}
+          method: put
+          request:
+            parameters:
+              querystrings:
+                name: true
+                score: true
+              paths:
+                id: true
+  gameScores:
+    handler: src/lambda/game.scores
+    vpc: ${self:custom.vpc}
+    events:
+      - http:
+          path: /scores
+          method: get
+
+  gameVerify:
+    handler: src/lambda/game.verify
+    vpc: ${self:custom.vpc}
+
+  populateData:
+    handler: src/lambda/data.populate
+    vpc: ${self:custom.vpc}
+
+  getFoodItems:
+    handler: src/lambda/food.getAll
+    vpc: ${self:custom.vpc}
+    events:
+      - http:
+          path: /foodItems
+          method: get
+
+  getRandomTrashPanda:
+    handler: src/lambda/trash-panda.getRandom
+    vpc: ${self:custom.vpc}
+    events:
+      - http:
+          path: /trashPanda
+          method: get
+          request:
+            parameters:
+              querystrings:
+                used: false
+  saveAction:
+    handler: src/lambda/action.save
+    environment:
+      PARTITION_KEY: ${self:custom.kinesis.partitionKey}
+      STREAM_NAME: ${self:custom.kinesis.streamName}
+
+  processAction:
+    handler: src/lambda/action.process
+    vpc: ${self:custom.vpc}
+
+plugins:
+  - serverless-finch
+  - serverless-offline
+  - serverless-cloudfront-invalidate
+
+resources:
+  Resources:
+    assetsCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            -
+              DomainName: ${self:custom.client.bucketName}.s3.amazonaws.com
+              Id: ${self:custom.cloudFrontDistributionId}
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+          Enabled: true
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - HEAD
+              - GET
+            TargetOriginId: ${self:custom.cloudFrontDistributionId}
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: 'true'
+        Tags:
+          - Key: Group
+            Value: ${self:custom.groupName}
+    gameDBCluster:
+      Type: AWS::RDS::DBCluster
+      Properties:
+        DatabaseName: ${self:custom.database.name}
+        DBClusterIdentifier: trash-panda-buffet
+        DBSubnetGroupName:
+          Ref: trashPandaSubnetGroup
+        Engine: aurora
+        MasterUsername: ${self:custom.database.username}
+        MasterUserPassword: ${self:custom.database.password}
+        Tags:
+          - Key: Group
+            Value: ${self:custom.groupName}
+        VpcSecurityGroupIds:
+          - Fn::GetAtt: [ trashPandaSecurityGroup, GroupId ]
+    gameDBInstance:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBClusterIdentifier:
+          Ref: gameDBCluster
+        DBInstanceClass: db.r4.large
+        Engine: aurora
+        Tags:
+          - Key: Group
+            Value: ${self:custom.groupName}
+    gameActionKinesisStream:
+      Type: AWS::Kinesis::Stream
+      Properties:
+        Name: ${self:custom.kinesis.streamName}
+        ShardCount: 1
+        Tags:
+          - Key: Group
+            Value: ${self:custom.groupName}
+    trashPandaVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: 10.0.0.0/16
+        EnableDnsHostnames: true
+        Tags:
+          - Key: Name
+            Value: trash-panda-buffet
+          - Key: Group
+            Value: ${self:custom.groupName}
+    trashPandaSubnetA:
+      Type: AWS::EC2::Subnet
+      Properties:
+        AvailabilityZone:
+          Fn::Select:
+            - 0
+            - Fn::GetAZs: ""
+        CidrBlock: 10.0.0.0/24
+        Tags:
+          - Key: Name
+            Value: ${self:custom.groupName}
+        VpcId:
+          Ref: trashPandaVPC
+    trashPandaSubnetB:
+      Type: AWS::EC2::Subnet
+      Properties:
+        AvailabilityZone:
+          Fn::Select:
+            - 1
+            - Fn::GetAZs: ""
+        CidrBlock: 10.0.1.0/24
+        Tags:
+          - Key: Name
+            Value: ${self:custom.groupName}
+        VpcId:
+          Ref: trashPandaVPC
+    trashPandaSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupName: trash-panda-subnet-group
+        DBSubnetGroupDescription: Subnet group for trash panda buffet
+        SubnetIds:
+          - Ref: trashPandaSubnetA
+          - Ref: trashPandaSubnetB
+        Tags:
+          - Key: Name
+            Value: ${self:custom.groupName}
+    trashPandaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupName: trash-panda-sg
+        GroupDescription: Security Group for those trash pandas
+        SecurityGroupEgress:
+          - IpProtocol: -1
+            CidrIp: 0.0.0.0/0
+        Tags:
+          - Key: Name
+            Value: ${self:custom.groupName}
+        VpcId:
+          Ref: trashPandaVPC
+    trashPandaSGIngressRule:
+      Type: AWS::EC2::SecurityGroupIngress
+      Properties:
+        IpProtocol: -1
+        GroupId:
+          Fn::GetAtt: [ trashPandaSecurityGroup, GroupId ]
+        SourceSecurityGroupId:
+          Fn::GetAtt: [ trashPandaSecurityGroup, GroupId ]
+
+  Outputs:
+    cloudFrontDistributionOutput:
+      Value:
+        Ref: assetsCloudFrontDistribution

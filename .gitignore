@@ -1,0 +1,9 @@
+# package directories
+node_modules
+
+# Serverless directories
+.serverless
+
+# other
+/design/
+.DS_Store

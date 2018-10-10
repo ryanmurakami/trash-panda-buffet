@@ -1,0 +1,36 @@
+.listContainer {
+  align-items: center;
+  background-color: white;
+  border: 3px solid white;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  height: 350px;
+  justify-content: center;
+  margin: 35px auto;
+  position: relative;
+  width: 300px;
+}
+
+.header {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.result {
+  display: flex;
+  font-size: 18px;
+  justify-content: center;
+  margin-bottom: 5px;
+  opacity: .7;
+}
+
+.result > .name {
+  font-weight: 500;
+  margin-right: 15px;
+}
+
+.result > .points {
+  margin-left: 10px;
+}

@@ -1,0 +1,23 @@
+.pandaContainer {
+  align-items: center;
+  background-color: white;
+  border: 3px solid white;
+  border-radius: 3px;
+  display: flex;
+  flex-grow: 1;
+  height: 450px;
+  justify-content: center;
+  position: relative;
+  width: 300px;
+}
+
+.pandaImage {
+  height: 450px;
+}
+
+.remainingCounter {
+  font-weight: bold;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}

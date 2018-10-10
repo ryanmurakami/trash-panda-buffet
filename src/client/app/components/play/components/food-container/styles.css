@@ -1,0 +1,7 @@
+.foodContainer {
+  align-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+  height: 450px;
+  width: 225px;
+}
