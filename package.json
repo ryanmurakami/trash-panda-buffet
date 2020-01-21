@@ -44,7 +44,6 @@
     "serverless-cloudfront-invalidate": "1.4.0",
     "serverless-finch": "2.5.2",
     "serverless-offline": "5.12.1",
-    "serverless-stack-output": "0.2.3",
     "standard": "14.3.1",
     "string-replace-loader": "2.2.0",
     "webpack": "4.41.5",
