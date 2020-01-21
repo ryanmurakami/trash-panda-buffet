@@ -1,7 +1,7 @@
 {
   "name": "trash-panda-buffet",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "Demo Project for AWS Developer: Serverless Architecture and Monitoring",
   "dependencies": {
     "aws-xray-sdk": "2.5.0",
     "lodash": "4.17.15",
@@ -60,5 +60,6 @@
     "remove": "serverless remove"
   },
   "author": "Ryan Lewis <ryan@ryanhlewis.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }
