@@ -31,7 +31,7 @@ module.exports.save = async (event) => {
   }
 
   try {
-    const game = await Game.findById(gameId)
+    const game = await Game.findByPk(gameId)
 
     if (!game) {
       return RESPONSE.notFound('Game not found')
@@ -61,7 +61,7 @@ module.exports.verify = async event => {
   const gameId = get(event, 'queryStringParameters.gameId')
 
   try {
-    const game = await Game.findById(gameId)
+    const game = await Game.findByPk(gameId)
 
     if (!game) {
       return RESPONSE.unauthorized()

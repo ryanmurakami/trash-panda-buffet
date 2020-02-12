@@ -1,6 +1,6 @@
 service: trash-panda-buffet
 
-frameworkVersion: ">=1.32.0 <2.0.0"
+frameworkVersion: ">=1.61.0 <2.0.0"
 
 custom:
   cloudFrontDistributionId: trash-panda-buffet
@@ -28,7 +28,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   region: <region>
   iamRoleStatements:
     - Effect: Allow
