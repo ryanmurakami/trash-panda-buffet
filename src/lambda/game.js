@@ -1,5 +1,5 @@
 const { get } = require('lodash')
-const uuidv1 = require('uuid/v1')
+const { v1: uuidv1 } = require('uuid')
 
 const RESPONSE = require('./lib/response')
 const { Game } = require('./lib/data')

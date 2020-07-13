@@ -1,11 +1,11 @@
 service: trash-panda-buffet
 
-frameworkVersion: ">=1.61.0 <2.0.0"
+frameworkVersion: ">=1.74.0 <2.0.0"
 
 custom:
   cloudFrontDistributionId: trash-panda-buffet
   client:
-    bucketName: trash-panda-buffet-client-<your_name>
+    bucketName: trash-panda-buffet-client-ryan-oh-so-unique
     distributionFolder: src/client/dist
   cloudfrontInvalidate:
     distributionIdKey: cloudFrontDistributionOutput
@@ -29,7 +29,7 @@ custom:
 provider:
   name: aws
   runtime: nodejs12.x
-  region: <region>
+  region: us-west-2
   iamRoleStatements:
     - Effect: Allow
       Action:
