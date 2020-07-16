@@ -4,7 +4,7 @@
   "description": "Demo Project for AWS Developer: Serverless Architecture and Monitoring",
   "dependencies": {
     "aws-xray-sdk": "2.5.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "mysql2": "2.1.0",
     "sequelize": "5.21.3",
     "uuid": "3.4.0"
