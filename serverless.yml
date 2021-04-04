@@ -1,6 +1,6 @@
 service: trash-panda-buffet
 
-frameworkVersion: ">=1.74.0 <2.0.0"
+frameworkVersion: ">2.0.0"
 
 custom:
   cloudFrontDistributionId: trash-panda-buffet
