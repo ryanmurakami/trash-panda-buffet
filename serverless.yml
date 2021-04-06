@@ -9,7 +9,7 @@ custom:
     distributionFolder: src/client/dist
   cloudfrontInvalidate:
     - distributionIdKey: cloudFrontDistributionOutput
-    - items:
+      items:
         - '/assets/*'
   database:
     name: trashPandaBuffet
