@@ -8,9 +8,9 @@ custom:
     bucketName: trash-panda-buffet-client-ryan-oh-so-unique
     distributionFolder: src/client/dist
   cloudfrontInvalidate:
-    distributionIdKey: cloudFrontDistributionOutput
-    items:
-      - '/assets/*'
+    - distributionIdKey: cloudFrontDistributionOutput
+    - items:
+        - '/assets/*'
   database:
     name: trashPandaBuffet
     password: pandabear
@@ -28,15 +28,18 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   region: us-west-2
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - cloudfront:GetDistribution
-        - kinesis:GetRecords
-        - kinesis:PutRecord
-      Resource: '*'
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - cloudfront:GetDistribution
+            - kinesis:GetRecords
+            - kinesis:PutRecord
+          Resource: '*'
   environment:
     DB_ADDRESS:
       Fn::GetAtt: [ gameDBCluster, Endpoint.Address ]
@@ -167,7 +170,7 @@ resources:
         DBClusterIdentifier: trash-panda-buffet
         DBSubnetGroupName:
           Ref: trashPandaSubnetGroup
-        Engine: aurora
+        Engine: aurora-mysql
         MasterUsername: ${self:custom.database.username}
         MasterUserPassword: ${self:custom.database.password}
         Tags:
@@ -180,8 +183,8 @@ resources:
       Properties:
         DBClusterIdentifier:
           Ref: gameDBCluster
-        DBInstanceClass: db.r4.large
-        Engine: aurora
+        DBInstanceClass: db.t3.small
+        Engine: aurora-mysql
         Tags:
           - Key: Group
             Value: ${self:custom.groupName}
