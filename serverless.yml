@@ -1,12 +1,13 @@
-service: trash-panda-buffet
+service: trash-panda-buffet-test
 
-frameworkVersion: ">2.0.0"
+frameworkVersion: '2'
+variablesResolutionMode: 20210326
 
 custom:
-  cloudFrontDistributionId: trash-panda-buffet
   client:
-    bucketName: trash-panda-buffet-client-ryan-oh-so-unique
+    bucketName: tpb-assets-<your_name>
     distributionFolder: src/client/dist
+  cloudFrontDistributionId: trash-panda-buffet-test
   cloudfrontInvalidate:
     - distributionIdKey: cloudFrontDistributionOutput
       items:
@@ -29,17 +30,15 @@ custom:
 provider:
   name: aws
   runtime: nodejs14.x
-  region: us-west-2
+  region: ${file(./helpers/region.js)}
   lambdaHashingVersion: 20201221
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - cloudfront:GetDistribution
-            - kinesis:GetRecords
-            - kinesis:PutRecord
-          Resource: '*'
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cloudfront:GetDistribution
+        - kinesis:GetRecords
+        - kinesis:PutRecord
+      Resource: '*'
   environment:
     DB_ADDRESS:
       Fn::GetAtt: [ gameDBCluster, Endpoint.Address ]
@@ -130,7 +129,6 @@ functions:
 
 plugins:
   - serverless-finch
-  - serverless-offline
   - serverless-cloudfront-invalidate
 
 resources:
@@ -170,7 +168,7 @@ resources:
         DBClusterIdentifier: trash-panda-buffet
         DBSubnetGroupName:
           Ref: trashPandaSubnetGroup
-        Engine: aurora-mysql
+        Engine: aurora
         MasterUsername: ${self:custom.database.username}
         MasterUserPassword: ${self:custom.database.password}
         Tags:
@@ -183,8 +181,8 @@ resources:
       Properties:
         DBClusterIdentifier:
           Ref: gameDBCluster
-        DBInstanceClass: db.t3.small
-        Engine: aurora-mysql
+        DBInstanceClass: db.r4.large
+        Engine: aurora
         Tags:
           - Key: Group
             Value: ${self:custom.groupName}

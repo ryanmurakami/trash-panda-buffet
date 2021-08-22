@@ -1,11 +1,11 @@
 const { get } = require('lodash')
-const { v1: uuidv1 } = require('uuid')
+const { v4: uuidv4 } = require('uuid')
 
 const RESPONSE = require('./lib/response')
 const { Game } = require('./lib/data')
 
 module.exports.init = async () => {
-  const gameId = uuidv1()
+  const gameId = uuidv4()
 
   try {
     await Game.create({
@@ -19,8 +19,7 @@ module.exports.init = async () => {
   }
 }
 
-module.exports.save = async (event) => {
-  console.log('the event', event)
+module.exports.save = async event => {
   const gameId = get(event, 'pathParameters.id')
   const name = get(event, 'queryStringParameters.name')
   const score = get(event, 'queryStringParameters.score')

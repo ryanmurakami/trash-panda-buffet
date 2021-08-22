@@ -1,5 +1,5 @@
 const path = require('path')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
@@ -22,8 +22,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
-        exclude: /node_modules/,
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -48,10 +48,13 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin({
+    new CopyPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, 'static'),
+          globOptions: {
+            ignore: ['**/.DS_Store']
+          },
           to: path.resolve(__dirname, 'dist')
         }
       ]
