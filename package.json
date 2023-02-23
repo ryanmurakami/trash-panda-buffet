@@ -6,7 +6,7 @@
     "aws-xray-sdk": "3.3.3",
     "lodash": "4.17.21",
     "mysql2": "2.3.0",
-    "sequelize": "6.6.5",
+    "sequelize": "6.28.2",
     "uuid": "8.3.2"
   },
   "devDependencies": {
